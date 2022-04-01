@@ -17,6 +17,9 @@ class Barnacle:
 
     def set_token(self, token):
         self.token = token
+        
+    def get_token(self):
+        print(self.token)
 
     def set_prefix(self, prefix):
         self.prefix = prefix
