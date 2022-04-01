@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from barnacle import Barnacle
 import os
 import sys
