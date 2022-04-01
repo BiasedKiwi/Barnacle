@@ -31,6 +31,12 @@ class Barnacle:
         self.strip_after_prefix = strip_after_prefix
 
     def start(self):
+        # Set the events
+        
+        @self.client.event
+        async def on_ready():
+            print("Barnacle is online and connected to Discord.")
+            
         try:
             self.client.run(self.token)
         except discord.errors.LoginFailure:
@@ -39,12 +45,6 @@ class Barnacle:
         except discord.errors.GatewayNotFound:
             print("The gateway hub for the Client websocket could not be found. This might happen when Discord is down. Please try again later.")
             exit(1)
-            
-        # Set the events
-        
-        @self.client.event
-        def on_ready():
-            print("Barnacle is online and connected to Discord.")
 
 
 if __name__ == "__main__":
