@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+from typing import List, Union
 
 import discord
 from discord.ext import commands
@@ -18,22 +19,31 @@ class Barnacle:
             help_command=None
         )
 
-    def set_token(self, token):
+    def set_token(self, token: str) -> None:
+        """Set the token that will be used to connect to the Discord API."""
         self.token = token
         
-    def get_token(self):
-        print(self.token)
+    def get_token(self) -> str:
+        """Fetch the token to be used to connect to the Discord API. Stored in `self.token`"""
+        return self.token
 
-    def set_prefix(self, prefix):
+    def set_prefix(self, prefix: Union[List, str]) -> None:
+        """Set the prefix to be used with the bot."""
         self.prefix = prefix
+        
+    def get_prefix(self) -> List:
+        """Fetch a list of the prefixes to be used with the bot"""
+        return self.prefix
 
-    def set_case_insensitive(self, case_insensitive):
+    def set_case_insensitive(self, case_insensitive: bool) -> None:
+        """Set the case insensitive flag to be used with the bot."""
         self.case_insensitive = case_insensitive
 
-    def set_strip_after_prefix(self, strip_after_prefix):
+    def set_strip_after_prefix(self, strip_after_prefix: bool) -> None:
+        """Set the strip after prefix flag to be used with the bot."""
         self.strip_after_prefix = strip_after_prefix
         
-    def load_cogs(self, directory: str):
+    def load_cogs(self, directory: str) -> None:
         """Load all cogs in a given directory in O(n) time."""
         os.chdir(directory)
         for _, _, f_name in os.walk(os.getcwd()):  # Iterate through all the files in a directory
@@ -41,7 +51,8 @@ class Barnacle:
                 if item.endswith(".py"):
                     self.client.load_extension(f"barnacle.extensions.{item[:-3]}")  # TODO: Find a way to determine "barnacle.extensions." without hardcoding the value.
 
-    def start(self):
+    def start(self) -> None:
+        """Start the bot using `client.run`."""
         # Set the events
         @self.client.event
         async def on_ready():
