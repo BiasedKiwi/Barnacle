@@ -4,6 +4,7 @@ from typing import List, Union
 
 import discord
 from discord.ext import commands
+from .rich_printer import PrettyPrinter
 
 
 class Barnacle:
@@ -12,6 +13,7 @@ class Barnacle:
         self.prefix = prefix
         self.case_insensitive = case_insensitive
         self.strip_after_prefix = strip_after_prefix
+        self.pretty_printer = PrettyPrinter()
         self.client = commands.AutoShardedBot(  # Initialise the bot instance
             command_prefix=self.prefix,
             case_insensitive=self.case_insensitive,
@@ -56,7 +58,7 @@ class Barnacle:
         # Set the events
         @self.client.event
         async def on_ready():
-            print("Barnacle is online and connected to Discord.")
+            self.pretty_printer.bold("Barnacle is online and connected to Discord.")
             
         os.chdir("./barnacle")
         self.load_cogs("./extensions")
