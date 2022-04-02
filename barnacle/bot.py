@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import os
+
 import discord
 from discord.ext import commands
 
@@ -12,7 +14,8 @@ class Barnacle:
         self.client = commands.AutoShardedBot(  # Initialise the bot instance
             command_prefix=self.prefix,
             case_insensitive=self.case_insensitive,
-            strip_after_prefix=self.strip_after_prefix
+            strip_after_prefix=self.strip_after_prefix,
+            help_command=None
         )
 
     def set_token(self, token):
@@ -29,13 +32,23 @@ class Barnacle:
 
     def set_strip_after_prefix(self, strip_after_prefix):
         self.strip_after_prefix = strip_after_prefix
+        
+    def load_cogs(self, directory: str):
+        """Load all cogs in a given directory in O(n) time."""
+        os.chdir(directory)
+        for _, _, f_name in os.walk(os.getcwd()):  # Iterate through all the files in a directory
+            for item in f_name:
+                if item.endswith(".py"):
+                    self.client.load_extension(f"barnacle.extensions.{item[:-3]}")  # TODO: Find a way to determine "barnacle.extensions." without hardcoding the value.
 
     def start(self):
         # Set the events
-        
         @self.client.event
         async def on_ready():
             print("Barnacle is online and connected to Discord.")
+            
+        os.chdir("./barnacle")
+        self.load_cogs("./extensions")
             
         try:
             self.client.run(self.token)
@@ -43,7 +56,7 @@ class Barnacle:
             print("An invalid token was passed.")
             exit(1)
         except discord.errors.GatewayNotFound:
-            print("The gateway hub for the Client websocket could not be found. This might happen when Discord is down. Please try again later.")
+            print("An error occured. This might happen when Discord is down. Please try again later.")
             exit(1)
 
 
