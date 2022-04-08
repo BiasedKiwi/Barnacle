@@ -1,10 +1,13 @@
 import discord
 from discord.ext import commands
+from barnacle import PrettyPrinter
 
 
 class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
-        print("Misc cog is online.")
+        self.pretty_print = PrettyPrinter()
+        print("Misc cog is ", end="")
+        self.pretty_print.green("online")
         self.bot = bot
         
     @commands.command(name="ping", description="Get the bot's latency in milliseconds.")

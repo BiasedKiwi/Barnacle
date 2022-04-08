@@ -1,11 +1,14 @@
 import discord
 from discord import Color as color
 from discord.ext import commands
+from barnacle import PrettyPrinter
 
 
 class Help(commands.Cog):
     def __init__(self, bot: commands.Bot):
-        print("Help cog is online.")
+        self.pretty_print = PrettyPrinter()
+        print("Help cog is ", end="")
+        self.pretty_print.green("online")
         self.bot = bot
 
     @commands.command(name="help", description="Returns all commands available")
