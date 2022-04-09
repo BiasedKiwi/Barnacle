@@ -29,7 +29,6 @@ class Ban(commands.Cog):
     @commands.guild_only()
     async def unban(self, ctx: commands.Context, member_id: int = None):  # TODO: Make this command support using usernames.
         """unban a user from a server."""
-        print(member_id)
         if member_id is not None:
             try:
                 user: discord.User = await self.bot.fetch_user(member_id)
