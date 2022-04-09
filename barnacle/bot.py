@@ -45,16 +45,19 @@ class Barnacle:
         """Set the strip after prefix flag to be used with the bot."""
         self.strip_after_prefix = strip_after_prefix
         
-    def load_cogs(self, directory: str) -> None:
+    def load_cogs(self, directory: str, subdir: str = "") -> None:
         """Load all cogs in a given directory in a recursive fashion."""
         os.chdir(directory)
         base = os.getcwd()
         for file in os.listdir():  # Iterate through all the files in a directory
             if file.endswith(".py"):
-                self.client.load_extension(f"barnacle.extensions.{file[:-3]}")  # TODO: Find a way to determine "barnacle.extensions." without hardcoding the value.
+                if subdir != "":
+                    self.client.load_extension(f"barnacle.extensions.{subdir}.{file[:-3]}")  # TODO: Find a way to determine "barnacle.extensions." without hardcoding the value.
+                else:
+                    self.client.load_extension(f"barnacle.extensions.{file[:-3]}")
             elif os.path.isdir(os.path.join(base, file)):
                 os.chdir(os.path.join(base, file))
-                self.load_cogs(os.getcwd())
+                self.load_cogs(os.getcwd(), subdir = file)
                 os.chdir(base)
 
     def start(self) -> None:
