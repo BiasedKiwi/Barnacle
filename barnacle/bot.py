@@ -46,12 +46,16 @@ class Barnacle:
         self.strip_after_prefix = strip_after_prefix
         
     def load_cogs(self, directory: str) -> None:
-        """Load all cogs in a given directory in O(n) time."""
+        """Load all cogs in a given directory in a recursive fashion."""
         os.chdir(directory)
-        for _, _, f_name in os.walk(os.getcwd()):  # Iterate through all the files in a directory
-            for item in f_name:
-                if item.endswith(".py"):
-                    self.client.load_extension(f"barnacle.extensions.{item[:-3]}")  # TODO: Find a way to determine "barnacle.extensions." without hardcoding the value.
+        base = os.getcwd()
+        for file in os.listdir():  # Iterate through all the files in a directory
+            if file.endswith(".py"):
+                self.client.load_extension(f"barnacle.extensions.{file[:-3]}")  # TODO: Find a way to determine "barnacle.extensions." without hardcoding the value.
+            elif os.path.isdir(os.path.join(base, file)):
+                os.chdir(os.path.join(base, file))
+                self.load_cogs(os.getcwd())
+                os.chdir(base)
 
     def start(self) -> None:
         """Start the bot using `client.run`."""
