@@ -45,15 +45,25 @@ class Ban(commands.Cog):
     async def ban_handler(self, ctx: commands.Context, error: commands.CommandError):
         """The error handler for the kick command"""
         if isinstance(error, commands.MissingPermissions):
-            await ctx.send(embed=discord.Embed(title="Something went wrong!", description="You do not have permission to kick users.", color=color.gold()))
+            embed = discord.Embed(title="Something went wrong!", description="You do not have permission to kick users.", color=color.gold())
+            embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
+            await ctx.send(embed=embed)
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(embed=discord.Embed(title="Something went wrong!", description="You need to specify a user to kick.", color=color.gold()))
+            embed = discord.Embed(title="Something went wrong!", description="You need to specify a user to kick.", color=color.gold())
+            embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
+            await ctx.send(embed=embed)
         elif isinstance(error, commands.BadArgument):
-            await ctx.send(embed=discord.Embed(title="Something went wrong!", description="The user you specified does not exist.", color=color.gold()))
+            embed = discord.Embed(title="Something went wrong!", description="The user you specified does not exist.", color=color.gold())
+            embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
+            await ctx.send(embed=embed)
         elif isinstance(error, commands.BotMissingPermissions):
-            await ctx.send(embed=discord.Embed(title="Something went wrong!", description="I do not have permission to kick users.", color=color.gold()))
+            embed = discord.Embed(title="Something went wrong!", description="I do not have permission to kick users.", color=color.gold())
+            embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
+            await ctx.send(embed=embed)
         elif isinstance(error, commands.errors.NoPrivateMessage):
-            await ctx.send(embed=discord.Embed(title="Something went wrong!", description="You cannot use this command in DMs", color=color.gold()))
+            embed = discord.Embed(title="Something went wrong!", description="You cannot use this command in DMs", color=color.gold())
+            embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
+            await ctx.send(embed=embed)
         else:
             raise error
         
