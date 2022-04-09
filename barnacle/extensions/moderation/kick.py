@@ -19,7 +19,7 @@ class Kick(commands.Cog):
         if reason is None:
             reason = "No reason provided."
         await member.kick(reason=reason)
-        await ctx.channel.send(embed=discord.Embed(title="Kick", description=f"{member.mention} has been kicked.", color=color.gold()))
+        await ctx.channel.send(embed=discord.Embed(title="Done!", description=f"{member.mention} has been kicked.", color=color.gold()))
 
     @kick.error
     async def kick_handler(self, ctx: commands.Context, error: commands.CommandError):
