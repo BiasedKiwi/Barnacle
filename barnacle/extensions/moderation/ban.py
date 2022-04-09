@@ -52,6 +52,8 @@ class Ban(commands.Cog):
             await ctx.send(embed=discord.Embed(title="Something went wrong!", description="The user you specified does not exist.", color=color.gold()))
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send(embed=discord.Embed(title="Something went wrong!", description="I do not have permission to kick users.", color=color.gold()))
+        elif isinstance(error, commands.errors.NoPrivateMessage):
+            await ctx.send(embed=discord.Embed(title="Something went wrong!", description="You cannot use this command in DMs", color=color.gold()))
         else:
             raise error
         
