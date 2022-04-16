@@ -5,6 +5,24 @@ from discord.ext import commands
 from barnacle import PrettyPrinter
 
 
+class Confirm(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.confirmed = None
+        
+    @discord.ui.button(label="Confirm", style=discord.ButtonStyle.green)
+    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message("Confirmed!", ephemeral=True)
+        self.confirmed = True
+        self.stop()
+        
+    @discord.ui.button(label="Cancel", style=discord.ButtonStyle.grey)
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message("Cancelled.", ephemeral=True)
+        self.confirmed = False
+        self.stop()
+
+
 class Moderation(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -13,7 +31,7 @@ class Moderation(commands.Cog):
         self.pretty_print = PrettyPrinter()
         print("Moderation cog is ", end="")
         self.pretty_print.green("online")
-        
+    
     @app_commands.command(name="kick", description="Kick a user from the server.")
     @app_commands.checks.has_permissions(kick_members=True)
     @app_commands.checks.bot_has_permissions(kick_members=True)
@@ -97,6 +115,36 @@ class Moderation(commands.Cog):
             embed = discord.Embed(title="Something went wrong!", description="You cannot use this command in DMs", color=color.gold())
             embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
             await ctx.send(embed=embed)
+        else:
+            raise error
+        
+    @app_commands.command(name="purge", description="Delete a number of messages from the current channel.")
+    @app_commands.checks.has_permissions(manage_messages=True)
+    @app_commands.checks.bot_has_permissions(manage_messages=True)
+    @app_commands.describe(number_of_messages="The number of messages to delete.")
+    async def purge(self, interaction: discord.Interaction, number_of_messages: int):
+        if number_of_messages >= 100:
+            view = Confirm()
+            await interaction.response.send_message(f"Are you sure you want to delete {number_of_messages} messages?", view=view)
+            await view.wait()
+            if view.confirmed is None:
+                await interaction.followup.send(embed=discord.Embed(title="Cancelled!", description="Timed out.", color=color.gold()))
+            elif view.confirmed:
+                await interaction.channel.purge(limit=number_of_messages)
+                await interaction.followup.send(embed=discord.Embed(title="Done!", description=f"Deleted {number_of_messages} messages.", color=color.gold()))
+            elif not view.confirmed:
+                await interaction.followup.send(embed=discord.Embed(title="Got it!", description=f"Cancelled the deletion of {number_of_messages} messages.", color=color.gold()))
+        else:
+                await interaction.channel.purge(limit=number_of_messages)
+                await interaction.response.send_message("Deleted {} messages.".format(number_of_messages))
+                
+    @purge.error
+    async def purge_handler(self, ctx: commands.Context, error: commands.CommandError):
+        """The error handler for the kick command"""
+        if isinstance(error, commands.MissingPermissions):
+            await ctx.send(embed=discord.Embed(title="Something went wrong!", description="You do not have permission to delete messages.", color=color.gold()))
+        elif isinstance(error, commands.BotMissingPermissions):
+            await ctx.send(embed=discord.Embed(title="Something went wrong!", description="I do not have permission to delete messages.", color=color.gold()))
         else:
             raise error
         
