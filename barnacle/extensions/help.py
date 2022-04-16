@@ -4,21 +4,23 @@ from discord.ext import commands
 from barnacle import PrettyPrinter
 
 
+class CustomHelp(commands.MinimalHelpCommand):
+    async def send_pages(self):
+        destination = self.get_destination()
+        for page in self.paginator.pages:
+            embed = discord.Embed(description=page)
+            await destination.send(embed=embed)
+
 class Help(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.pretty_print = PrettyPrinter()
         print("Help cog is ", end="")
         self.pretty_print.green("online")
+        self._original_help_command = bot.help_command
+        bot.help_command = CustomHelp()
+        bot.help_command.cog = self
         self.bot = bot
 
-    @commands.command(name="help", description="Returns all commands available")
-    async def help(self, ctx):
-        """Self updating help command. It fetches all the commands using `self.bot.commands` and uses their `description` attribute as the help text."""
-        embed = discord.Embed(title="Barnacle Help", description="All commands are listed below.", color=color.gold())
-        for command in self.bot.commands:  # Iterate through all the registered commands
-            embed.add_field(name=command.name, value=command.description, inline=False)
-        await ctx.send(embed=embed)
 
-
-def setup(bot: commands.Bot):
-    bot.add_cog(Help(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Help(bot))
