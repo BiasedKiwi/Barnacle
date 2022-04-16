@@ -17,9 +17,11 @@ class Barnacle:
         self.case_insensitive = case_insensitive
         self.strip_after_prefix = strip_after_prefix
         self.pretty_printer = PrettyPrinter()
+        self.intents = discord.Intents.default()
+        self.intents.message_content = True
         self.client = commands.AutoShardedBot(  # Initialise the bot instance
             command_prefix=self.prefix,
-            intents=discord.Intents.default(),
+            intents=self.intents,
             case_insensitive=self.case_insensitive,
             strip_after_prefix=self.strip_after_prefix,
             help_command=None,
