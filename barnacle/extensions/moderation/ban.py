@@ -69,5 +69,5 @@ class Ban(commands.Cog):
         
     
         
-def setup(bot: commands.Bot):
-    bot.add_cog(Ban(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Ban(bot))

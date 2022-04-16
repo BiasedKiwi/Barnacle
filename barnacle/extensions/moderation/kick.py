@@ -35,5 +35,5 @@ class Kick(commands.Cog):
         else:
             raise error
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Kick(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Kick(bot))

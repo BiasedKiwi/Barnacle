@@ -1,4 +1,5 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
 from barnacle import PrettyPrinter
 
@@ -16,7 +17,11 @@ class Misc(commands.Cog):
         embed = discord.Embed(title="Pong!", description=f"The bot's current latency is {round(self.bot.latency * 1000, 1)}ms", color=discord.Color.gold())
         embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         await ctx.send(embed=embed)
+        
+    @app_commands.command(name="test")
+    async def test(self, interaction: discord.Interaction):
+        await interaction.response.send_message(f"Hello {interaction.author.mention}!")
 
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Misc(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Misc(bot), guilds=[discord.Object(id=883413709031108608)])
