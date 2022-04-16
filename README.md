@@ -49,4 +49,4 @@ $ py launcher.py  # Windows
 
 ## License
     
-Barnacle is licensed un the GNU General Public License v3.0. See [LICENSE](https://github.com/shadawcraw/Barnacle/blob/main/LICENSE) for details.
+Barnacle is licensed under the GNU General Public License v3.0. See [LICENSE](https://github.com/shadawcraw/Barnacle/blob/main/LICENSE) for details.
