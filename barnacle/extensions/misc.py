@@ -18,9 +18,17 @@ class Misc(commands.Cog):
         embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
         await ctx.send(embed=embed)
         
-    @app_commands.command(name="test")
+    @commands.command(name="sync")
+    @commands.is_owner()
+    async def sync(self, ctx) -> None:
+        await self.bot.tree.sync(guild=ctx.guild)
+        await ctx.channel.send("Synced!")
+        
+    @app_commands.command(name="ping", description="Get the bot's latency in milliseconds.")
     async def test(self, interaction: discord.Interaction):
-        await interaction.response.send_message(f"Hello {interaction.author.mention}!")
+        embed = discord.Embed(title="Pong!", description=f"The bot's current latency is {round(self.bot.latency * 1000, 1)}ms", color=discord.Color.gold())
+        embed.set_footer(text=f"Requested by {interaction.user}", icon_url=interaction.user.avatar)
+        await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot: commands.Bot):
