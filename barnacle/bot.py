@@ -71,9 +71,6 @@ class Barnacle:
     def start(self) -> None:
         """Start the bot using `client.run`."""
         # Set the events
-        @self.client.event
-        async def on_ready():
-            self.pretty_printer.bold("Barnacle is online and connected to Discord.")
 
         os.chdir("./barnacle")
         asyncio.run(self.load_cogs("./extensions"))
