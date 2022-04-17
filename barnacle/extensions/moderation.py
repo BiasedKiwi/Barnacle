@@ -141,9 +141,18 @@ class Moderation(commands.Cog):
         member_id="The ID of the user you would like to unban from the server."
     )
     async def unban(
-        self, interaction: discord.Interaction, member_id: int
+        self, interaction: discord.Interaction, member_id: str
     ):  # TODO: Make this command support using usernames.
         """unban a user from a server."""
+        try:
+            member_id = int(member_id)  #
+        except ValueError as e:
+            await interaction.response.send_message(embed=
+                discord.Embed(
+                    title="Something went wrong!",
+                    description="You've passed an invalid user ID!",
+                ).add_field(name="Debug Info", value=f"```{e}```")
+            )
         if member_id is not None:
             try:
                 user: discord.User = await self.bot.fetch_user(member_id)
@@ -302,18 +311,27 @@ class Moderation(commands.Cog):
     @app_commands.checks.has_permissions(manage_messages=True)
     @app_commands.checks.bot_has_permissions(manage_messages=True)
     @app_commands.describe(member="The member to mute.")
-    async def mute(self, interaction: discord.Interaction, member: discord.Member, reason: str = None):
+    async def mute(
+        self,
+        interaction: discord.Interaction,
+        member: discord.Member,
+        reason: str = None,
+    ):
         if reason is None:
             reason = "No reason provided."
         muted_role = discord.utils.get(interaction.guild.roles, name="Muted")
         if not muted_role:
-            muted_role = await interaction.guild.create_role(name="Muted", colour=color.gold())
+            muted_role = await interaction.guild.create_role(
+                name="Muted", colour=color.gold()
+            )
         perms = discord.Permissions(send_messages=False)
         guild = interaction.guild
-        categories =  discord.utils.get(guild.categories)
+        categories = discord.utils.get(guild.categories)
         await categories.set_permissions(guild.default_role, send_messages=None)
         await categories.set_permissions(muted_role, send_messages=False)
-        embed = discord.Embed(title="User muted", description=f"{member} was muted", colour=color.gold())
+        embed = discord.Embed(
+            title="User muted", description=f"{member} was muted", colour=color.gold()
+        )
         embed.add_field(name="Reason:", value=reason, inline=False)
         await interaction.response.send_message(embed=embed)
         await member.add_roles(muted_role, reason=reason)
