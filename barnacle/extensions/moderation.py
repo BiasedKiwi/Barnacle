@@ -125,6 +125,11 @@ class Moderation(commands.Cog):
         """Ban a user from a server."""
         if reason is None:
             reason = "No reason provided."
+        await member.send(
+            embed=discord.Embed(title="You've been banned!", color=color.gold())
+            .add_field(name="Server", value=interaction.guild)
+            .add_field(name="Reason", value=reason)
+        )
         await member.ban(reason=reason)
         await interaction.response.send_message(
             embed=discord.Embed(
@@ -147,8 +152,8 @@ class Moderation(commands.Cog):
         try:
             member_id = int(member_id)  #
         except ValueError as e:
-            await interaction.response.send_message(embed=
-                discord.Embed(
+            await interaction.response.send_message(
+                embed=discord.Embed(
                     title="Something went wrong!",
                     description="You've passed an invalid user ID!",
                 ).add_field(name="Debug Info", value=f"```{e}```")
@@ -169,7 +174,7 @@ class Moderation(commands.Cog):
             await interaction.response.send_message(
                 embed=discord.Embed(
                     title="Done!",
-                    description=f"Successfully unbanned {user.name} with ID {user.id}.",
+                    description=f"Successfully unbanned {user} with ID {user.id}.",
                     color=color.gold(),
                 )
             )
@@ -182,8 +187,8 @@ class Moderation(commands.Cog):
                 )
             )
 
-    @unban.error
     @ban.error
+    @unban.error
     async def ban_handler(self, ctx: commands.Context, error: commands.CommandError):
         """The error handler for the kick command"""
         if isinstance(error, commands.MissingPermissions):
@@ -317,32 +322,47 @@ class Moderation(commands.Cog):
         member: discord.Member,
         reason: str = None,
     ):
-        if reason is None:
-            reason = "No reason provided."
-        muted_role = discord.utils.get(interaction.guild.roles, name="Muted")
-        if not muted_role:
-            muted_role = await interaction.guild.create_role(
-                name="Muted", colour=color.gold()
+        try:
+            if reason is None:
+                reason = "No reason provided."
+            muted_role = discord.utils.get(interaction.guild.roles, name="Muted")
+            if not muted_role:
+                muted_role = await interaction.guild.create_role(
+                    name="Muted", colour=color.gold()
+                )
+            guild = interaction.guild
+            categories = discord.utils.get(guild.categories)
+            await categories.set_permissions(guild.default_role, send_messages=None)
+            await categories.set_permissions(muted_role, send_messages=False)
+            embed = discord.Embed(
+                title="User muted",
+                description=f"{member} was muted",
+                colour=color.gold(),
             )
-        perms = discord.Permissions(send_messages=False)
-        guild = interaction.guild
-        categories = discord.utils.get(guild.categories)
-        await categories.set_permissions(guild.default_role, send_messages=None)
-        await categories.set_permissions(muted_role, send_messages=False)
-        embed = discord.Embed(
-            title="User muted", description=f"{member} was muted", colour=color.gold()
-        )
-        embed.add_field(name="Reason:", value=reason, inline=False)
-        await interaction.response.send_message(embed=embed)
-        await member.add_roles(muted_role, reason=reason)
-        await member.send(f"You have been muted from {guild.name}. Reason: {reason}")
+            embed.add_field(name="Reason:", value=reason, inline=False)
+            await interaction.response.send_message(embed=embed)
+            await member.add_roles(muted_role, reason=reason)
+            await member.send(
+                embed=discord.Embed(title="You've been muted!", color=color.gold())
+                .add_field(name="Server", value=interaction.guild.name)
+                .add_field(name="Duration", value="Permanent.")
+                .add_field(name="Reason", value=reason)
+            )
+        except Exception as e:
+            await interaction.response.send_message(
+                embed=discord.Embed(
+                    title="Something went wrong!",
+                    description="An unrecoverable error occurred while trying to ban {}.".format(member.mention),
+                    color=color.gold(),
+                ).add_field(name="Debug Info", value="```{}```".format(e))
+            )
 
     @app_commands.command(name="unmute", description="Unmute a user from the server.")
     @app_commands.checks.has_permissions(manage_messages=True)
     @app_commands.checks.bot_has_permissions(manage_messages=True)
     @app_commands.describe(member="The member to unmute.")
     async def unmute(self, interaction: discord.Interaction, member: discord.Member):
-        if member.guild._roles.get("Muted") is None:
+        if discord.utils.get(interaction.guild.roles, name="Muted") is None:
             await interaction.response.send_message(
                 embed=discord.Embed(
                     title="Something went wrong!",
@@ -350,6 +370,7 @@ class Moderation(commands.Cog):
                     color=color.gold(),
                 )
             )
+            return
         try:
             await member.remove_roles(
                 discord.utils.get(member.guild.roles, name="Muted")
