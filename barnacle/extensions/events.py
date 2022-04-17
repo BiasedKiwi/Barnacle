@@ -21,6 +21,7 @@ class EventListener(commands.Cog):
     async def on_ready(self):
         print("\nLogged in as ", end="")
         self.pretty_print.bold(str(self.bot.user))
+        print(f"ID: {self.bot.user.id}")
         self.pretty_print.bold("Barnacle is online and connected to Discord.")
 
     @commands.Cog.listener()
