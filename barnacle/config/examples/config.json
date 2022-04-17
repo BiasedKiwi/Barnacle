@@ -1,0 +1,11 @@
+{
+    "bot_info": {
+        "version": "v0.11.0",
+        "repo_url": "https://github.com/shadawcraw/Barnacle",
+        "author": "Shadawcraw"
+    },
+    "statuses": {
+        "list": ["Goodbye message commands!", "Who's there?"],
+        "randomized": true
+    }
+}
