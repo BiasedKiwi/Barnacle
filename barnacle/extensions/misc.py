@@ -22,7 +22,7 @@ class Misc(commands.Cog):
     @sync.error
     async def sync_handler(self, ctx: commands.Context, error: commands.CommandError):
         if isinstance(error, commands.errors.NotOwner):
-            ctx.channel.send(
+            await ctx.channel.send(
                 embed=discord.Embed(
                     title="Something went wrong!",
                     description="Only the owner of the bot can execute this command!",
@@ -42,6 +42,8 @@ class Misc(commands.Cog):
             text=f"Requested by {interaction.user}", icon_url=interaction.user.avatar
         )
         await interaction.response.send_message(embed=embed)
+        
+    
 
 
 async def setup(bot: commands.Bot):
