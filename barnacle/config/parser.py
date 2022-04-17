@@ -25,15 +25,13 @@ def yaml_to_dict(yaml_path: str) -> Dict:
 def detect_config(directory: str):
     dir_contents = list(pathlib.Path(directory).iterdir())
     for f in dir_contents:
-        if f.suffix == ".yaml":  # Always prioritize .yaml files
-            return (f, yaml_to_dict(f))
-        elif f.suffix == ".ini":
-            return (f, ini_to_dict(f))
-        elif f.suffix == ".json":
+        if f.suffix == ".json":  # In my opinion, .json is the most common config file, so chances are people will now it's syntax.
             return (f, json_to_dict(f))
-        else:
-            raise ValueError(f"Unsupported file type:  {f}")
-        
+        elif f.suffix == ".yaml":  # .yaml is a common config file, but not the most common.
+            return (f, yaml_to_dict(f))
+        elif f.suffix == ".ini":  # bruh
+            return (f, ini_to_dict(f))
+    return None
 
 
 if __name__ == "__main__":
