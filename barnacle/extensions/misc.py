@@ -26,6 +26,7 @@ class Misc(commands.Cog):
                 embed=discord.Embed(
                     title="Something went wrong!",
                     description="Only the owner of the bot can execute this command!",
+                    color=discord.Color.gold(),
                 )
             )
 
