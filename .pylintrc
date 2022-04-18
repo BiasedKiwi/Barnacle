@@ -1,0 +1,11 @@
+[MESSAGES CONTROL]
+disable=
+    line-too-long,
+    missing-function-docstring,
+    missing-module-docstring,
+    missing-class-docstring,
+    trailing-whitespace,
+    fixme,
+    invalid-name,
+    unspecified-encoding,
+    no-self-use,
