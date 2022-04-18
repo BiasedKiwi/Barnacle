@@ -4,6 +4,26 @@ from discord.ext import commands
 from barnacle import PrettyPrinter
 
 
+class Refresh(discord.ui.View):
+    def __init__(self, bot: commands.Bot, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.bot = bot
+
+    @discord.ui.button(label="Refresh", emoji="🔄")
+    async def refresh(self, interaction: discord.Interaction, button: discord.Button):
+        await interaction.message.edit(
+            embed=discord.Embed(
+                title="Pong!",
+                description=f"The bot's current latency is {round(self.bot.latency * 1000, 1)}ms",
+                color=discord.Color.gold(),
+            ).set_footer(
+                text=f"Refreshed by {interaction.user}",
+                icon_url=interaction.user.avatar,
+            )
+        )
+        await interaction.response.send_message("Refreshed!", ephemeral=True)
+
+
 class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -34,6 +54,7 @@ class Misc(commands.Cog):
         name="ping", description="Get the bot's latency in milliseconds."
     )
     async def test(self, interaction: discord.Interaction):
+        view = Refresh(self.bot)
         embed = discord.Embed(
             title="Pong!",
             description=f"The bot's current latency is {round(self.bot.latency * 1000, 1)}ms",
@@ -42,7 +63,7 @@ class Misc(commands.Cog):
         embed.set_footer(
             text=f"Requested by {interaction.user}", icon_url=interaction.user.avatar
         )
-        await interaction.response.send_message(embed=embed)
+        await interaction.response.send_message(embed=embed, view=view)
 
 
 async def setup(bot: commands.Bot):
