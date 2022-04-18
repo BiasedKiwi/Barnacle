@@ -43,8 +43,6 @@ class Misc(commands.Cog):
             text=f"Requested by {interaction.user}", icon_url=interaction.user.avatar
         )
         await interaction.response.send_message(embed=embed)
-        
-    
 
 
 async def setup(bot: commands.Bot):

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import sys
 from typing import List, Union
 
 import discord
@@ -62,7 +63,9 @@ class Barnacle:
                         f"barnacle.extensions.{subdir}.{file[:-3]}"
                     )  # As of Discord.py 2.0, `load_extension` is a coroutine.
                 else:
-                    await self.client.load_extension(f"barnacle.extensions.{file[:-3]}")  # Refer to comment on line 61.
+                    await self.client.load_extension(
+                        f"barnacle.extensions.{file[:-3]}"
+                    )  # Refer to comment on line 61.
             elif os.path.isdir(os.path.join(base, file)):
                 os.chdir(os.path.join(base, file))
                 await self.load_cogs(os.getcwd(), subdir=file)  # Recursive call
@@ -79,14 +82,14 @@ class Barnacle:
             self.client.run(self.token)
         except discord.errors.LoginFailure:
             print("An invalid token was passed.")
-            exit(1)
+            sys.exit(1)
         except discord.errors.GatewayNotFound:
             print(
                 "An error occured. This might happen when Discord is down. Please try again later."
             )
-            exit(1)
+            sys.exit(1)
 
 
 if __name__ == "__main__":
     print("Please launch the launcher.py file instead of this one directly.")
-    exit(1)
+    sys.exit(1)
