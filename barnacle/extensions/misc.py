@@ -9,7 +9,7 @@ class Refresh(discord.ui.View):
         super().__init__(*args, **kwargs)
         self.bot = bot
 
-    @discord.ui.button(label="Refresh", emoji="🔄")
+    @discord.ui.button(label="Refresh", emoji="🔄", custom_id="barnacle_ping_cmd_button:refresh")
     async def refresh(self, interaction: discord.Interaction, button: discord.Button):
         await interaction.message.edit(
             embed=discord.Embed(
@@ -54,7 +54,7 @@ class Misc(commands.Cog):
         name="ping", description="Get the bot's latency in milliseconds."
     )
     async def test(self, interaction: discord.Interaction):
-        view = Refresh(self.bot)
+        view = Refresh(self.bot, timeout=None)
         embed = discord.Embed(
             title="Pong!",
             description=f"The bot's current latency is {round(self.bot.latency * 1000, 1)}ms",
