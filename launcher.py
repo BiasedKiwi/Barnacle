@@ -77,6 +77,7 @@ if (
 
 intents = discord.Intents.default()
 intents.message_content = True
+intents.members = True
 instance = Barnacle(
     command_prefix=PREFIX,
     intents=intents,
