@@ -480,8 +480,12 @@ class Moderation(commands.Cog):
         for key in scan[1]:
             table = await redis.hgetall(key)
             if int(table[b"ends_at"]) < round(time.time()):
-                instance_objects = get_member_from_server(int(table[b"server_id"]), int(table[b"member_id"]))
-                await instance_objects[1].remove_roles(discord.utils.get(instance_objects[0].roles, name="Muted"))
+                instance_objects = get_member_from_server(
+                    int(table[b"server_id"]), int(table[b"member_id"])
+                )
+                await instance_objects[1].remove_roles(
+                    discord.utils.get(instance_objects[0].roles, name="Muted")
+                )
                 await redis.delete(key)
 
     @auto_unmute.before_loop
