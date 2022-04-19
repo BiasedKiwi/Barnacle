@@ -6,7 +6,8 @@ import logging
 import os
 import sys
 from datetime import datetime
-
+import asyncio
+import discord
 from dotenv import load_dotenv
 
 from barnacle import Barnacle
@@ -25,7 +26,9 @@ handler.setFormatter(
 )
 logger.addHandler(handler)
 
-instance = Barnacle()  # Initialise a Barnacle instance
+# Constants
+TOKEN = ""
+PREFIX = ""
 
 
 load_dotenv()  # Load the .env file
@@ -43,13 +46,13 @@ else:  # If the token was not specified via the command line arguments, attempt 
             "You can also set an environment variable 'BARNACLE_TOKEN' for access to the token by barnacle."
         )
         sys.exit(1)
-instance.set_token(token)
+TOKEN = token
 
 if len(sys.argv) > 2:  # Check if the prefix was passed in the command line arguments
-    token = sys.argv[2]
+    prefix = sys.argv[2]
 else:  # If the prefix was not specified via the command line arguments, attempt to fetch it from the environment
-    token = os.environ.get("BARNACLE_PREFIX")
-    if token is None:
+    prefix = os.environ.get("BARNACLE_PREFIX")
+    if prefix is None:
         print(
             "Please provide a valid Barnacle prefix. (Example: 'python3 launcher.py <token> <prefix>')"
         )
@@ -57,7 +60,7 @@ else:  # If the prefix was not specified via the command line arguments, attempt
             "You can also set an environment variable 'BARNACLE_PREFIX' for access to the token by barnacle."
         )
         sys.exit(1)
-instance.set_prefix(token)
+PREFIX = prefix
 strip_after_prefix = os.getenv("BARNACLE_STRIP")
 case_insensitive = os.getenv("BARNACLE_CASE")
 
@@ -71,4 +74,15 @@ if (
         "BARNACLE_STRIP and BARNACLE_CASE environment variables were not set. Defaulting to True for both."
     )  # Send a warning to the log file.
 
-instance.start()  # Start the Barnacle instance
+
+intents = discord.Intents.default()
+intents.message_content = True
+instance = Barnacle(
+    command_prefix=PREFIX,
+    intents=intents,
+    strip_after_prefix=True,
+    case_insensitive=True,
+)  # Initialise a Barnacle instance
+
+
+instance.run(TOKEN)

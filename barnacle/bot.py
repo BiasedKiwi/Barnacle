@@ -9,85 +9,37 @@ from .rich_printer import PrettyPrinter
 import asyncio
 
 
-class Barnacle:
+class Barnacle(commands.AutoShardedBot):
     def __init__(
-        self, token="", prefix=".", case_insensitive=True, strip_after_prefix=True
+        self, **kwargs
     ):
-        self.token = token
-        self.prefix = prefix
-        self.case_insensitive = case_insensitive
-        self.strip_after_prefix = strip_after_prefix
+        self.prefix = kwargs["command_prefix"]
+        self.case_insensitive = True
+        self.strip_after_prefix = True
         self.pretty_printer = PrettyPrinter()
-        self.intents = discord.Intents.default()
-        self.intents.message_content = True
-        self.client = commands.AutoShardedBot(  # Initialise the bot instance
-            command_prefix=self.prefix,
-            intents=self.intents,
-            case_insensitive=self.case_insensitive,
-            strip_after_prefix=self.strip_after_prefix,
-            help_command=None,
-        )
+        super().__init__(**kwargs)
+        
+    async def setup_hook(self):
+        await self.load_cogs(client=self, directory="./barnacle/extensions")
 
-    def set_token(self, token: str) -> None:
-        """Set the token that will be used to connect to the Discord API."""
-        self.token = token
-
-    def get_token(self) -> str:
-        """Fetch the token to be used to connect to the Discord API. Stored in `self.token`"""
-        return self.token
-
-    def set_prefix(self, prefix: Union[List, str]) -> None:
-        """Set the prefix to be used with the bot."""
-        self.prefix = prefix
-
-    def get_prefix(self) -> List:
-        """Fetch a list of the prefixes to be used with the bot"""
-        return self.prefix
-
-    def set_case_insensitive(self, case_insensitive: bool) -> None:
-        """Set the case insensitive flag to be used with the bot."""
-        self.case_insensitive = case_insensitive
-
-    def set_strip_after_prefix(self, strip_after_prefix: bool) -> None:
-        """Set the strip after prefix flag to be used with the bot."""
-        self.strip_after_prefix = strip_after_prefix
-
-    async def load_cogs(self, directory: str, subdir: str = "") -> None:
+    async def load_cogs(self, client, directory: str, subdir: str = "") -> None:
         """Load all cogs in a given directory in a recursive fashion."""
         os.chdir(directory)
         base = os.getcwd()
         for file in os.listdir():  # Iterate through all the files in a directory
             if file.endswith(".py"):
                 if subdir != "":
-                    await self.client.load_extension(
+                    await client.load_extension(
                         f"barnacle.extensions.{subdir}.{file[:-3]}"
                     )  # As of Discord.py 2.0, `load_extension` is a coroutine.
                 else:
-                    await self.client.load_extension(
+                    await client.load_extension(
                         f"barnacle.extensions.{file[:-3]}"
                     )  # Refer to comment on line 61.
             elif os.path.isdir(os.path.join(base, file)):
                 os.chdir(os.path.join(base, file))
-                await self.load_cogs(os.getcwd(), subdir=file)  # Recursive call
+                await self.load_cogs(client, os.getcwd(), subdir=file)  # Recursive call
                 os.chdir(base)
-
-    def start(self) -> None:
-        """Start the bot using `client.run`."""
-        # Set the events
-
-        os.chdir("./barnacle")
-        asyncio.run(self.load_cogs("./extensions"))
-
-        try:
-            self.client.run(self.token)
-        except discord.errors.LoginFailure:
-            print("An invalid token was passed.")
-            sys.exit(1)
-        except discord.errors.GatewayNotFound:
-            print(
-                "An error occured. This might happen when Discord is down. Please try again later."
-            )
-            sys.exit(1)
 
 
 if __name__ == "__main__":
