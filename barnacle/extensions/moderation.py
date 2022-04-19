@@ -1,8 +1,18 @@
+import asyncio
+import re
+import time
+
+import aioredis
 import discord
+from barnacle import PrettyPrinter
 from discord import Color as color
 from discord import app_commands
-from discord.ext import commands
-from barnacle import PrettyPrinter
+from discord.ext import commands, tasks
+
+redis = aioredis.Redis(
+    host="localhost",
+    port=6379,
+)
 
 
 class Confirm(discord.ui.View):
@@ -18,7 +28,7 @@ class Confirm(discord.ui.View):
         self.confirmed = True
         self.stop()
 
-    @discord.ui.button(label="Cancel", style=discord.ButtonStyle.grey)
+    @discord.ui.button(label="Cancel", style=discord.ButtonStyle.gray)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message("Cancelled.", ephemeral=True)
         self.confirmed = False
@@ -30,6 +40,7 @@ class Moderation(commands.Cog):
         self.bot = bot
 
     async def cog_load(self):
+        self.auto_unmute.start()
         self.pretty_print = PrettyPrinter()
         print("Moderation cog is ", end="")
         self.pretty_print.green("online")
@@ -274,7 +285,7 @@ class Moderation(commands.Cog):
                         color=color.gold(),
                     )
                 )
-            elif not view.confirmed:
+            else:
                 await interaction.followup.send(
                     embed=discord.Embed(
                         title="Got it!",
@@ -285,7 +296,7 @@ class Moderation(commands.Cog):
         else:
             await interaction.channel.purge(limit=number_of_messages)
             await interaction.response.send_message(
-                "Deleted {} messages.".format(number_of_messages)
+                f"Deleted {number_of_messages} messages."
             )
 
     @purge.error
@@ -352,10 +363,130 @@ class Moderation(commands.Cog):
             await interaction.response.send_message(
                 embed=discord.Embed(
                     title="Something went wrong!",
-                    description="An unrecoverable error occurred while trying to ban {}.".format(member.mention),
+                    description=f"An unrecoverable error occurred while trying to ban {member.mention}.",
                     color=color.gold(),
-                ).add_field(name="Debug Info", value="```{}```".format(e))
+                ).add_field(name="Debug Info", value=f"```{e}```")
             )
+
+    @app_commands.command(
+        name="tempmute", description="Temporarily mute a user from the server."
+    )
+    @app_commands.checks.has_permissions(manage_messages=True)
+    @app_commands.checks.bot_has_permissions(manage_messages=True)
+    @app_commands.describe(
+        duration="how long will the mute last? (E.x. 1m = 1 minute, 1h = 1 hour, 1mo = 1 month...).",
+        member="The server member you would like to mute.",
+    )
+    async def tempmute(
+        self,
+        interaction: discord.Interaction,
+        member: discord.Member,
+        duration: str,
+        reason: str,
+    ):  # Prepare the forks and the knives because you're about to see some spaghetti code.
+        time_in_secs = {  # Use ReGex to get the time in seconds
+            re.compile(r"(\d){1,}(s)$"): 1,
+            re.compile(r"(\d{1,})(m)$"): 60,
+            re.compile(r"(\d{1,})(h)$"): 3600,
+            re.compile(r"(\d{1,})(d)$"): 86400,
+            re.compile(r"(\d{1,})(w)$"): 604800,
+            re.compile(r"(\d{1,})(mo)$"): 2629800,
+            re.compile(r"(\d{1,})(y)$"): 31557600,
+        }
+
+        async def translate_duration(to_seconds: str):
+            for key in time_in_secs.keys():
+                match = re.match(key, to_seconds)
+                if match is not None:
+                    try:
+                        multiplier = int(match[1])
+                    except ValueError as e:
+                        await interaction.response.send_message(
+                            embed=discord.Embed(
+                                title="Something went wrong!",
+                                description="The duration you provided was in incorrect format, please follow the following format: `1m: 1 minute, 1h: 1 hour, 1d: 1 day, 1w: 1 week, 1mo: 1 month, 1y: 1 year`",
+                                color=color.gold(),
+                            ).add_field(name="Debug Info", value=f"```{e}```")
+                        )
+
+                        return
+                    return time_in_secs[key] * multiplier
+            await interaction.response.send_message(
+                embed=discord.Embed(
+                    title="Something went wrong!",
+                    description="The duration you provided was in incorrect format, please follow the following format: `1m: 1 minute, 1h: 1 hour, 1d: 1 day, 1w: 1 week, 1mo: 1 month, 1y: 1 year`",
+                    color=color.gold(),
+                )
+            )
+            raise ValueError(key)
+
+        async def gen_mute_entry(
+            duration: int, member: discord.Member, guild: discord.Guild
+        ):
+            return {
+                "member_id": member.id,
+                "server_id": guild.id,
+                "starts_at": round(time.time()),
+                "ends_at": round(time.time()) + duration,
+                "duration": duration,
+            }
+
+        mute_entry = await gen_mute_entry(
+            await translate_duration(duration), member, interaction.guild
+        )
+
+        if reason is None:
+            reason = "No reason provided."
+        muted_role = discord.utils.get(
+            interaction.guild.roles, name="Muted"
+        )  # Create the muted role if it doesn't exist.
+        if not muted_role:
+            muted_role = await interaction.guild.create_role(
+                name="Muted", colour=color.gold()
+            )
+        guild = interaction.guild
+        categories = discord.utils.get(guild.categories)
+        await categories.set_permissions(guild.default_role, send_messages=None)
+        await categories.set_permissions(muted_role, send_messages=False)
+
+        await redis.hset(f"mute_{guild.id}-{member.id}", mapping=mute_entry)
+
+        embed = discord.Embed(
+            title="User muted",
+            description=f"{member} was muted",
+            colour=color.gold(),
+        )
+        embed.add_field(name="Reason:", value=reason, inline=False)
+        await interaction.response.send_message(embed=embed)
+        muted_role = discord.utils.get(interaction.guild.roles, name="Muted")
+        await member.add_roles(muted_role, reason=reason)
+        await member.send(
+            embed=discord.Embed(title="You've been muted!", color=color.gold())
+            .add_field(name="Server", value=interaction.guild.name)
+            .add_field(
+                name="Duration",
+                value=f"{time.strftime('%d days, %H hours, %M minutes, %M seconds', time.gmtime(await translate_duration(duration)))}",
+            )
+            .add_field(name="Reason", value=reason)
+        )
+
+    @tasks.loop(seconds=5)
+    async def auto_unmute(self):
+        def get_member_from_server(server_id: int, member_id: int):
+            guild = self.bot.get_guild(server_id)
+            return (guild, guild.get_member(member_id))
+
+        scan = await redis.scan(cursor=0, match="mute_*")
+        for key in scan[1]:
+            table = await redis.hgetall(key)
+            if int(table[b"ends_at"]) < round(time.time()):
+                instance_objects = get_member_from_server(int(table[b"server_id"]), int(table[b"member_id"]))
+                await instance_objects[1].remove_roles(discord.utils.get(instance_objects[0].roles, name="Muted"))
+                await redis.delete(key)
+
+    @auto_unmute.before_loop
+    async def before_auto_unmute(self):
+        await self.bot.wait_until_ready()
 
     @app_commands.command(name="unmute", description="Unmute a user from the server.")
     @app_commands.checks.has_permissions(manage_messages=True)
@@ -383,6 +514,7 @@ class Moderation(commands.Cog):
                 ).add_field(name="Debug Info", value=e)
             )
             return
+        await redis.delete(f"mute_{interaction.guild.id}-{member.id}")
 
         await interaction.response.send_message(
             embed=discord.Embed(
