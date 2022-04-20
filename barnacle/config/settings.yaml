@@ -1,6 +1,7 @@
 - bot_info:
   - version: "v0.11.0"
   - repo_url: "https://github.com/shadawcraw/Barnacle"
+  - repo_short: "shadawcraw/Barnacle"
   - author: "Shadawcraw"
 
 - statuses:
