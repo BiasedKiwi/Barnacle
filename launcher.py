@@ -61,18 +61,6 @@ else:  # If the prefix was not specified via the command line arguments, attempt
         )
         sys.exit(1)
 PREFIX = prefix
-strip_after_prefix = os.getenv("BARNACLE_STRIP")
-case_insensitive = os.getenv("BARNACLE_CASE")
-
-if (
-    strip_after_prefix is None or case_insensitive is None
-):  # Check if optional variables are set
-    print(
-        "Warning: BARNACLE_STRIP and BARNACLE_CASE environment variables were not set. Defaulting to True for both."
-    )
-    logger.warning(
-        "BARNACLE_STRIP and BARNACLE_CASE environment variables were not set. Defaulting to True for both."
-    )  # Send a warning to the log file.
 
 
 intents = discord.Intents.default()
