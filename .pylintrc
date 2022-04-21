@@ -9,3 +9,11 @@ disable=
     invalid-name,
     unspecified-encoding,
     no-self-use,
+    attribute-defined-outside-init,
+    broad-except,
+    wrong-import-order,
+    assigning-non-slot,
+    consider-using-dict-items,
+    no-member,
+    undefined-loop-variable,
+    

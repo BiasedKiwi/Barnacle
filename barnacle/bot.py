@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 import os
 import sys
-from typing import List, Union
 
-import discord
 from discord.ext import commands
+
 from .rich_printer import PrettyPrinter
-import asyncio
 
 
 class Barnacle(commands.AutoShardedBot):

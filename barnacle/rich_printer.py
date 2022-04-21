@@ -1,3 +1,5 @@
+# pylint: skip-file
+# Skip this file because it will be replaced with the `rich` module
 class PrettyPrinter:
     """A class to pretty print text to the console using ANSI color codes."""
 

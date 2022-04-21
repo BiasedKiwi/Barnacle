@@ -6,7 +6,6 @@ import logging
 import os
 import sys
 from datetime import datetime
-import asyncio
 import discord
 from dotenv import load_dotenv
 

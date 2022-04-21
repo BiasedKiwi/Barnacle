@@ -1,4 +1,4 @@
-import asyncio
+# pylint: disable=unused-argument, consider-iterating-dictionary
 import re
 import time
 

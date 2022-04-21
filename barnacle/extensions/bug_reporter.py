@@ -1,6 +1,5 @@
 import json
 import os
-from webbrowser import Error
 
 import discord
 import requests
@@ -8,7 +7,6 @@ from barnacle import PrettyPrinter, config
 from discord import app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
-from requests.auth import HTTPBasicAuth
 
 load_dotenv()
 
@@ -33,17 +31,13 @@ class BugReportForm(discord.ui.Modal, title="Bug Reporter"):
     async def on_submit(self, interaction: discord.Interaction):
         issue = {
             "title": f"[Automatic Bug Report] {self.summary.value}",
-            "body": f"## What command is concerned?\n{self.command_concerned.value}\n\n## What was supposed to happen?\n{self.expected_behavior.value}\n\n## What actually happened?\n{self.actual_behavior.value}\n\n## How can we reproduce this bug?\n{self.steps_to_reproduce.value}\n\n This issue has been reported automatically.",
+            "body": f"## What command is concerned?\n{self.command_concerned.value}\n\n## What was supposed to happen?\n{self.expected_behavior.value}\n\n## What actually happened?\n{self.actual_behavior.value}\n\n## How can we reproduce this bug?\n{self.steps_to_reproduce.value}\n\n This issue has been reported by {interaction.user}",
             "labels": ["bug"],
         }
         repo = config.detect_config("../config")[1][0]["bot_info"][2]["repo_short"]
         url = f"https://api.github.com/repos/{repo}/issues"  # If you are self-hosting, change the value in `settings.yaml`
         with requests.Session() as session: # If you are self-hosting, change this to your own credentials
             session.auth = ("shadawcraw", os.environ.get("BARNACLE_GH_TOKEN"))
-            headers = {
-                "Content-Type": "application/json",
-                "Authorization": f"token {os.environ.get('BARNACLE_GH_TOKEN')}",
-            }
             r = session.post(url, json.dumps(issue))
         if r.status_code == 201:
             await interaction.response.send_message(
