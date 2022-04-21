@@ -11,6 +11,7 @@ charset-normalizer==2.0.12
 click==8.1.2
 dill==0.3.4
 discord.py==2.0.0a4130+g1bfe6b2b
+-e git://github.com/Rapptz/discord.py
 greenlet==1.1.2
 idna==3.3
 importlib-metadata==4.11.3
