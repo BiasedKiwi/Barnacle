@@ -1,6 +1,7 @@
 # pylint: disable=unused-argument, consider-iterating-dictionary
 import re
 import time
+from os import environ
 
 import aioredis
 import discord
@@ -8,9 +9,11 @@ from barnacle import PrettyPrinter
 from discord import Color as color
 from discord import app_commands
 from discord.ext import commands, tasks
+from dotenv import load_dotenv
 
+load_dotenv()
 redis = aioredis.Redis(
-    host="localhost",
+    host=environ.get("BARNACLE_REDIS_HOST"),
     port=6379,
 )
 
