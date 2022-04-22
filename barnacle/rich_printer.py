@@ -1,5 +1,8 @@
+# pylint: skip-file
+# Skip this file because it will be replaced with the `rich` module
 class PrettyPrinter:
     """A class to pretty print text to the console using ANSI color codes."""
+
     def __init__(self):
         self._black = "\033[0;30m"
         self._red = "\033[0;31m"
@@ -32,63 +35,63 @@ class PrettyPrinter:
 
     def black(self, message):
         print(self._black + message + self.end)
-        
+
     def red(self, message):
         print(self._red + message + self.end)
-        
+
     def green(self, message):
         print(self._green + message + self.end)
-        
+
     def brown(self, message):
         print(self._brown + message + self.end)
-    
+
     def blue(self, message):
         print(self._blue + message + self.end)
-        
+
     def purple(self, message):
         print(self._purple + message + self.end)
-        
+
     def cyan(self, message):
         print(self._cyan + message + self.end)
-        
+
     def light_gray(self, message):
         print(self._light_gray + message + self.end)
-        
+
     def dark_gray(self, message):
         print(self._dark_gray + message + self.end)
-    
+
     def light_red(self, message):
         print(self._light_red + message + self.end)
-    
+
     def light_green(self, message):
         print(self._light_green + message + self.end)
-    
+
     def yellow(self, message):
         print(self._yellow + message + self.end)
-        
+
     def light_blue(self, message):
         print(self._light_blue + message + self.end)
-        
+
     def light_purple(self, message):
         print(self._light_purple + message + self.end)
-        
+
     def light_cyan(self, message):
         print(self._light_cyan + message + self.end)
-    
+
     def light_white(self, message):
         print(self._light_white + message + self.end)
-    
+
     def bold(self, message):
         print(self._bold + message + self.end)
-        
+
     def faint(self, message):
         print(self._faint + message + self.end)
-        
+
     def italic(self, message):
         print(self._italic + message + self.end)
-        
+
     def underline(self, message):
         print(self._underline + message + self.end)
-        
+
     def crossed(self, message):
         print(self._crossed + message + self.end)

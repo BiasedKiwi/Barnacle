@@ -1,0 +1,19 @@
+[MESSAGES CONTROL]
+disable=
+    line-too-long,
+    missing-function-docstring,
+    missing-module-docstring,
+    missing-class-docstring,
+    trailing-whitespace,
+    fixme,
+    invalid-name,
+    unspecified-encoding,
+    no-self-use,
+    attribute-defined-outside-init,
+    broad-except,
+    wrong-import-order,
+    assigning-non-slot,
+    consider-using-dict-items,
+    no-member,
+    undefined-loop-variable,
+    

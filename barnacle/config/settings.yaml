@@ -1,0 +1,11 @@
+- bot_info:
+  - version: "v0.11.0"
+  - repo_url: "https://github.com/shadawcraw/Barnacle"
+  - repo_short: "shadawcraw/Barnacle"
+  - author: "Shadawcraw"
+
+- statuses:
+  - list:  # You can add as much statuses to this array as you want, they will be added to th list of possible statuses the bot can have.
+    - "Goodbye message commands!"
+    - "Who's there?"
+  - randomized: true  # If this value is set to false, the first element of the statuses array will be used as the bot's status

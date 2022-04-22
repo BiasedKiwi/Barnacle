@@ -130,3 +130,6 @@ dmypy.json
 
 # Don't include vscode settings
 .vscode/settings.json
+
+# Redis database dump file
+dump.rdb
