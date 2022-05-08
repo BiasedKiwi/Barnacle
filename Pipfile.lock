@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "da6c6366385269f9a4a324104f4b4d9abb01fc42a4d703520144fc36a2c44276"
+            "sha256": "0f0736407fd3ce1cbed188c76fa739d0370973991431c10b86eef082c3deb1e2"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -160,6 +160,13 @@
             "index": "pypi",
             "version": "==8.1.2"
         },
+        "commonmark": {
+            "hashes": [
+                "sha256:452f9dc859be7f06631ddcb328b6919c67984aca654e5fefb3914d54691aed60",
+                "sha256:da2f38c92590f83de410ba1a3cbceafbc74fee9def35f9251ba9a971d6d66fd9"
+            ],
+            "version": "==0.9.1"
+        },
         "dill": {
             "hashes": [
                 "sha256:7e40e4a70304fd9ceab3535d36e58791d9c4a776b38ec7f7ec9afc8d3dca4d4f",
@@ -171,7 +178,7 @@
         "discord-py": {
             "editable": true,
             "git": "https://github.com/Rapptz/discord.py",
-            "ref": "f045b7d63c8d1500efebefa262b647653cac725c"
+            "ref": "69b12b97c0a3f24d8dae92f855c7ab507095edc9"
         },
         "discord.py": {
             "editable": true,
@@ -480,6 +487,14 @@
             "index": "pypi",
             "version": "==2.5.1"
         },
+        "pygments": {
+            "hashes": [
+                "sha256:44238f1b60a76d78fc8ca0528ee429702aae011c265fe6a8dd8b63049ae41c65",
+                "sha256:4e426f72023d88d03b2fa258de560726ce890ff3b630f88c21cbb8b2503b8c6a"
+            ],
+            "markers": "python_version >= '3.5'",
+            "version": "==2.11.2"
+        },
         "pylint": {
             "hashes": [
                 "sha256:c149694cfdeaee1aa2465e6eaab84c87a881a7d55e6e93e09466be7164764d1e",
@@ -558,6 +573,14 @@
             ],
             "index": "pypi",
             "version": "==2.27.1"
+        },
+        "rich": {
+            "hashes": [
+                "sha256:c50f3d253bc6a9bb9c79d61a26d510d74abdf1b16881260fab5edfc3edfb082f",
+                "sha256:ea74bc9dad9589d8eea3e3fd0b136d8bf6e428888955f215824c2894f0da8b47"
+            ],
+            "index": "pypi",
+            "version": "==12.2.0"
         },
         "setuptools": {
             "hashes": [
