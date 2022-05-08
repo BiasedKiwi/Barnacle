@@ -3,8 +3,8 @@ services:
     build: .
     depends_on:
       - redis
-    links:
-      - redis
+    environment:
+      BARNACLE_REDIS_HOST: redis
   redis:
     image: "redis:latest"
     ports:
